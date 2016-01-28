@@ -1,0 +1,390 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Vignette for package pubprint
+%
+% pubprint.Rnw
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Vignette options
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\VignetteIndexEntry{An Introduction to Pubprint}
+%\VignetteEngine{knitr::knitr}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document class
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[sc]{mathpazo} % palatino
+\usepackage{textcomp} % textbullet missing in mathpazo
+\usepackage{microtype}
+\usepackage{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Options for packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Hyperref options
+\hypersetup{%
+hidelinks,
+bookmarksopen=true,
+pdfpagemode=UseOutlines,
+pdfauthor={Rudolf Siegel},
+pdftitle={An Introduction to Pubprint},
+pdfsubject={R package vignette},
+pdfkeywords={pubprint, introduction, R}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Own commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Header // Title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{An Introduction to Pubprint}
+\author{Rudolf Siegel}
+\date{January 26, 2016}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Formating options
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% R options
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<echo=FALSE>>=
+library('knitr')
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+  \maketitle
+
+  \begin{abstract}
+    Pubprint is an extension for the R programming language. This package
+    takes the output of several statistical tests, collects the characteristic
+    values and transforms it in a publish-friendly pattern. Currently only the
+    APA style is supported with output to HTML, LaTeX, Markdown and plain
+    text. The pubprint package is easily extendable and can be used well
+    with knitr.
+  \end{abstract}
+
+  \tableofcontents
+
+  \section{Introduction}
+
+  The main function of pubprint is to convert the results of
+  statistical computations into R in a publishable manner.
+  This is possible for several publication styles (right now only for APA
+  style) and output formats (like \LaTeX, HTML, Markdown and plain text).
+  Adapting the publication style or the output format to your own needs is
+  quite easy.
+
+  Furthermore pubprint offers a smart memory system, meaning that you can
+  simply store and retrieve results of computations.  
+  This can be used when working together with knitr.  
+  You might like to do all computations in one place or R file and call later
+  only the results (works even with knitr inline R code).
+
+  In this document it is explained first, how the results of computations can
+  be formatted.
+  Then the memory system is expounded and how to change the general options
+  and adapting the functions to your own needs.
+
+
+  \section{Formatting statistical results}\label{sec:formatting}
+
+  \subsection{First steps}
+
+  A specific example might give a closer look how the formatting of
+  statistical computations works:
+
+  <<>>=
+  set.seed(4711) # better reproducibility
+
+  library('pubprint') # load library
+  pp_opts_out$set(pp_init_out("plain")) # better readability in this document
+
+  a <- rnorm(40)
+  b <- a + .3
+
+  pprint(t.test(a, b))
+  pprint(cor.test(a, b))
+  @
+
+  In this example, the random seed for this document is set to a fixed number to
+  get a better reproducibility.
+  In a next step we load the pubprint package and change the output format from
+  \LaTeX{} (default) to plain text.
+  This ensures better readability in this document.
+  Then, simply the result of a t-test is given to the pprint function.
+  As a result we get the formatted output according to APA style in plain text
+  output format (surrounded by brackets).
+  And that's it.
+  Additionaly, as you can see, pubprint is also capable of handling
+  correlations.
+
+
+  \subsection{Arguments of pprint function}
+
+  To further adapt the output to your needs, you can change the arguments of
+  the pprint function:
+
+  <<>>=
+  args(pubprint:::pprint)
+  @
+
+  Here is an example what happens if the arguments are modified:
+
+  <<>>=
+  pprint(t.test(a, b))
+  pprint(t.test(a, b),
+         concat = FALSE)
+  pprint(t.test(a, b),
+         separator = NULL)
+  pprint(t.test(a, b),
+         concat = FALSE,
+         separator = NULL)
+  pprint(t.test(a, b),
+         mmode = FALSE)
+  pprint(pprint(t.test(a, b),
+                concat = FALSE,
+                separator = NULL)[c(1, 2)])
+  @
+
+  The first command is the old and well-known one.
+  When passing \texttt{concat = FALSE} the single parts of a statistical
+  output are not concatenated and \texttt{separator} specifies how the output is
+  separated from the surrounding text (e.g. in your \LaTeX{} document).
+  These two options can be used to extract specific items from a result.
+  In the example above this is done with the two estimates (see last command).
+  Maybe there will be a better solution in a later release.
+  Altering \texttt{mmode} has no implication here.
+  \texttt{mmode}, a logical, defines whether the output is set in math mode or
+  not (e.g. in a \LaTeX{} document).
+  By changing the format argument you can define how to format your results.
+
+  <<>>=
+  pprint(t.test(a, b),
+         format = "object")
+  pprint(t.test(a, b),
+         format = "t.test")
+  pprint(t.test(a, b),
+         format = "chisquared")
+  @
+
+  If argument \texttt{format = "object"} is given, the object list is
+  returned, but you can specify an internal style function as well. 
+  Choosing \texttt{t.test} does not change anything, because this internal
+  style function is selected for a t-test by default.
+  Changing this argument makes sense when there may be different desired
+  outputs for the same statistical value (for example you could print a single
+  number as a rounded number or treat it like a p-value, etc.).
+  Obviously choosing \texttt{chisquared} does not make sense in this case.
+
+  The internal style functions are not documented yet.
+  You have to get a closer look at the source code to determine, which exist
+  and how to use them.
+  You can do that by visiting
+  \url{https://bitbucket.org/mutluyum/pubprint/src/} and navigating to
+  \nolinkurl{R/style\_apa.R}.
+  This will be fixed in later versions.
+
+
+  \subsection{Pass further information to pprint}
+
+  If you want to pass additional informations to pprint, you can do that by
+  creating a list.
+  For example you could add Cohen's $d$ to a t-test:
+
+  <<>>=
+  pprint(list(t.test(a, b), 0.2828363))
+  @
+
+  The same annotation like above is relevant: check the source code, which
+  further objects in a list are processed by the internal style functions.
+  Unused objects are ignored.
+
+
+  \subsection{Passing arguments to internal style functions}
+
+  The argument list of pprint has an ellipsis (\texttt{\dots}), that offers
+  the possibility to pass arguments to the internal style functions.
+  For example you can suppress the estimates of a t-test or alter their names
+  (again: have a look at the source code):
+
+  <<>>=
+  pprint(t.test(a, b), print.estimate = FALSE)
+  pprint(t.test(a, b), estimate.names = c("control", "treatment"))
+  @
+
+
+  \section{Using the memory functions}
+
+  \subsection{First steps}
+
+  To use the memory functions of pubprint, you have to create a pubprint
+  object before:
+
+  <<>>=
+  ppo <- pubprint()
+  @
+
+  Then, you can store and retrieve some computations in/from the pubprint
+  object
+
+  <<>>=
+  push(ppo) <- t.test(a, b)
+  pull(ppo)
+  @
+  
+  Obviously \texttt{pull()} has not simply returned the R object, instead it
+  called \texttt{pprint()}, too.
+  You can pass all arguments of \texttt{pprint()} to the pull function.
+  For example \texttt{format = "object"} will simply return the object, what
+  can be used for plot objects, etc.
+  Objects without a known internal style function will be handled in the same
+  manner.
+
+
+  \subsection{Arguments of the memory functions}
+
+  The push and pull functions have the following arguments:
+  <<>>=
+  args(pubprint:::`push<-.pubprint`)
+  args(pubprint:::pull.pubprint)
+  @
+
+  Argument \texttt{x} corresponds to a pubprint object and \texttt{value}
+  to the assigned value (like the result of the t-test).
+  Pubprint offers two different possibilities to save your results. 
+  First, there is a enumerated list, that is used as a pipe.
+  To be more precise, the first saved value will be first returned as well.
+  Second, there is a named list, that is used as a memory.
+  Storing and retrieving to this memory works only by naming the desired value.
+  In the next subsection this is explained in more detail.
+
+
+  \subsection{Using the pipe and the named memory}
+
+  The advantage of the pipe is a very simple interface. 
+  In the order the calculations are saved, they will be retrieved again.
+  In contrast the named memory offers more flexibility and security of retrieving
+  the correct result with slightly more effort.
+  Even if you add at a later point a statistical computation, you do not have
+  to care about the order.
+  If \texttt{item} is a numeric, your results will be saved in the pipe.
+  If it is a character, it will be saved in the named memory.
+  You can use both systems concurrently.
+
+  Pay attention, that \texttt{pull()} has a \texttt{remove} argument. It
+  specifies whether items are removed from pipe only (\texttt{"pipe"}), memory
+  only (\texttt{"memory"}, the default), never (\texttt{FALSE}) or always
+  (\texttt{TRUE}) on retrieving (there is also a general option).  
+  Here is a first example:
+
+  <<error=TRUE>>=
+  # save items in pipe and named memory
+  push(ppo) <- t.test(a)
+  push(ppo) <- t.test(a, b)
+  push(ppo, item = "i1") <- t.test(a, b + .2)
+
+  # retrieve items from pipe
+  pull(ppo) # item is removed from pipe
+  pull(ppo) # here as well
+  pull(ppo) # error because there are no more items in pipe
+
+  # retrieve items from named memory
+  pull(ppo, item = "i1") # item is not removed
+  pull(ppo, item = "i1", remove = TRUE) # item is removed
+  pull(ppo, item = "i1") # error, item does not more exist
+  @
+
+  
+  \subsection{Append additional information}
+
+  As seen in the section about \texttt{pprint()} it may be useful to add
+  further information to a statistical output.
+  Therefore the push function owns the \texttt{add} argument.
+  By specifing \texttt{add = TRUE}, you add an object to an existing item.
+  The corresponding item is either specified by \texttt{item} (pipe or named
+  memory) or \texttt{n}.
+  While \texttt{item} specifies an absolute position in the pipe or an item of
+  the named memory, \texttt{n} addresses a relative position in the pipe,
+  counting backwards.
+  So \texttt{n = 1} (default) corresponds to the last added item in the pipe,
+  \texttt{n = 2} the second last item, and so on.
+  The \texttt{n} argument is ignored, when \texttt{item} is specified.
+
+  <<>>=
+  push(ppo) <- t.test(a)
+  push(ppo) <- t.test(a, b)
+  # add to last pipe item (n = 1 is default)
+  push(ppo, add = TRUE) <- 0.2828363
+
+  pull(ppo) # retrieve one way t-test
+  pull(ppo) # retrieve two way t-test with Cohen's d
+  @
+
+
+  \section{Changing general options}
+
+  \subsection{Change publication style or output format}
+
+  You can change the output format by calling (supported are \texttt{"latex"},
+  \texttt{"markdown"}, \texttt{"html"} and \texttt{"plain"}):
+
+  <<>>=
+  pp_opts_out$set(pp_init_out("html"))
+  pprint(t.test(a, b))
+  pp_opts_out$set(pp_init_out("latex"))
+  pprint(t.test(a, b))
+  @
+
+  Currently there are no supported publication styles except APA. 
+
+  \subsection{Change package defaults}
+
+  General options can be changed with \texttt{pp\_opts} (see
+  \texttt{?pp\_opts} for more information):
+
+  <<>>=
+  pp_opts$set(mmode = FALSE)
+  @
+
+
+  \section{Adapting style and internal output functions}
+
+  Changing the provided style or internal output functions is quite easy.  You
+  can write your own function and replace a supplied function (or add a new
+  one) with it through \texttt{pp\_opts\_out} or \texttt{pp\_opts\_style}.
+
+  <<>>=
+  myttest <- function(...) return("Hello World!")
+  pp_opts_style$set("t.test" = myttest)
+  pprint(t.test(a, b))
+  @
+
+  Please, consider a contribution to this package if you have written
+  functions that could be useful to other people.
+  You will find more information on the website of this package.
+
+\end{document}

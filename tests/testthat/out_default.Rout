@@ -1,0 +1,170 @@
+> # out.default.value
+> #############################################################################
+> 
+> # Single value
+> prettyprint:::out.default.value(0.123456789,
++                                 nsmall = 2,
++                                 replace0 = FALSE,
++                                 leading0 = TRUE)
+[1] "0.12"
+> prettyprint:::out.default.value(0.123456789,
++                                 name = "t",
++                                 nsmall = 2,
++                                 replace0 = FALSE,
++                                 leading0 = TRUE)
+[1] "t=0.12"
+> prettyprint:::out.default.value(0.123456789,
++                                 name = "t",
++                                 inbracket = "N=1",
++                                 nsmall = 2,
++                                 replace0 = FALSE,
++                                 leading0 = FALSE)
+[1] "t(N=1)=.12"
+> 
+> # Number vector
+> prettyprint:::out.default.value(c(0.1,
++                                   0.234567891,
++                                   0.345678912,
++                                   0.456789123,
++                                   0.001,
++                                   -0.001),
++                                 nsmall = 2,
++                                 replace0 = TRUE,
++                                 leading0 = TRUE)
+[1] "0.10"  "0.23"  "0.35"  "0.46"  "0.01"  "-0.01"
+> prettyprint:::out.default.value(c(0.123456789,
++                                   0.234567891,
++                                   0.345678912,
++                                   0.456789123),
++                                 name = "t",
++                                 nsmall = 2,
++                                 replace0 = FALSE,
++                                 leading0 = TRUE)
+[1] "t=0.12" "t=0.23" "t=0.35" "t=0.46"
+> prettyprint:::out.default.value(c(0.123456789,
++                                   0.234567891,
++                                   0.345678912,
++                                   0.456789123,
++                                   0.001,
++                                   -0.001),
++                                 name = "t",
++                                 inbracket = "N=1",
++                                 nsmall = 2,
++                                 replace0 = TRUE,
++                                 leading0 = TRUE)
+[1] "t(N=1)=0.12"                              
+[2] "t(N=1)=0.23"                              
+[3] "t(N=1)=0.35"                              
+[4] "t(N=1)=0.46"                              
+[5] "t(N=1)\\ifmmode<\\else\\textless\\fi0.01" 
+[6] "t(N=1)\\ifmmode<\\else\\textless\\fi-0.01"
+> prettyprint:::out.default.value(c(0.123456789,
++                                   0.234567891,
++                                   0.345678912,
++                                   0.456789123),
++                                 name = c("t", 
++                                          "x", 
++                                          "s", 
++                                          "v"),
++                                 nsmall = 2,
++                                 replace0 = FALSE,
++                                 leading0 = TRUE)
+[1] "t=0.12" "x=0.23" "s=0.35" "v=0.46"
+> prettyprint:::out.default.value(c(0.123456789,
++                                   0.234567891,
++                                   0.345678912,
++                                   0.456789123),
++                                 name = c("t", 
++                                          "x", 
++                                          "s", 
++                                          "v"),
++                                 inbracket = c("N=1",
++                                               "N=2",
++                                               "N=3",
++                                               "N=4"),
++                                 nsmall = 2,
++                                 replace0 = FALSE,
++                                 leading0 = TRUE)
+[1] "t(N=1)=0.12" "x(N=2)=0.23" "s(N=3)=0.35" "v(N=4)=0.46"
+> 
+> # out.default.concat
+> #############################################################################
+> 
+> # Single string
+> prettyprint:::out.default.concat("Little Test", sep = ";")
+[1] "Little Test"
+> 
+> # String vector
+> prettyprint:::out.default.concat(c("Little Test", "Second Test"), sep = ";")
+[1] "Little Test" "Second Test"
+> 
+> # Multiple arguments
+> prettyprint:::out.default.concat("Little Test", "Second Test", sep = ";")
+[1] "Little Test;Second Test"
+> 
+> # Multiple vector arguments
+> prettyprint:::out.default.concat(c("Little Test", "Second Test"), c("Test again", "and again"), sep = ";")
+[1] "Little Test;Test again" "Second Test;and again" 
+> 
+> 
+> # out.default.subscript
+> #############################################################################
+> 
+> # Single string
+> prettyprint:::out.default.subscript("2")
+[1] "2"
+> 
+> # String vector
+> prettyprint:::out.default.subscript(c("2", "3"))
+[1] "2" "3"
+> 
+> 
+> # out.default.superscript
+> #############################################################################
+> 
+> # Single string
+> prettyprint:::out.default.superscript("2")
+[1] "2"
+> 
+> # String vector
+> prettyprint:::out.default.superscript(c("2", "3"))
+[1] "2" "3"
+> 
+> 
+> # out.bracket
+> #############################################################################
+> 
+> # Single string
+> prettyprint:::out.default.bracket("Little (Test)", brackets = c("(", ")", "[", "]"))
+    Little (Test) 
+"(Little [Test])" 
+> prettyprint:::out.default.bracket("Little [Test]", brackets = c("(", ")", "[", "]"))
+    Little [Test] 
+"(Little (Test))" 
+> prettyprint:::out.default.bracket("Little (Test) in [Test]", brackets = c("(", ")", "[", "]"))
+    Little (Test) in [Test] 
+"(Little [Test] in (Test))" 
+> prettyprint:::out.default.bracket("Little (Test in [Test])", brackets = c("(", ")", "[", "]"))
+    Little (Test in [Test]) 
+"(Little [Test in (Test)])" 
+> 
+> 
+> ### Change brackets
+> 
+> # Single string
+> prettyprint:::out.default.bracket("Little, (Test)", brackets = ", ")
+      Little, (Test) 
+", Little, (Test), " 
+> prettyprint:::out.default.bracket("Little, [Test]", brackets = ", ")
+      Little, [Test] 
+", Little, [Test], " 
+> prettyprint:::out.default.bracket("Little, (Test) in [Test]", brackets = ", ")
+      Little, (Test) in [Test] 
+", Little, (Test) in [Test], " 
+> prettyprint:::out.default.bracket("Little, (Test in [Test])", brackets = ", ")
+      Little, (Test in [Test]) 
+", Little, (Test in [Test]), " 
+> 
+> proc.time()
+   user  system elapsed 
+  0.302   0.051   0.338 
