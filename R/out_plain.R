@@ -4,10 +4,12 @@
 
 out.plain.init <- function()
 {
-    return(list(math = out.default.math,
-                names = out.default.names,
-                specialchar = out.default.specialchar,
-                value = out.default.value,
+    return(list(specialchar = out.default.specialchar,
+                math = out.default.math,
+                operator = out.default.operator,
+                number = out.default.number,
+                identifier = out.default.identifier,
+                term = out.default.term,
                 concat = out.default.concat,
                 subscript = out.default.subscript,
                 superscript = out.default.superscript,

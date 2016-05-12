@@ -5,11 +5,11 @@
 \title{Prints an object in a publishable manner}
 \usage{
 pprint(x, format, ..., concat = TRUE, mmode = pp_opts$get("mmode"),
-  separator = pp_opts$get("separator"))
+  separator = pp_opts$get("separator"), toClip = FALSE)
 }
 \arguments{
 \item{x}{object which output should be printed. Can be a list to deliver
-additional information to internal functions.}
+additional information to internal style functions.}
 
 \item{format}{optional format specifier. Character vector, see details.}
 
@@ -23,6 +23,9 @@ a character vector with parts of the statistical output.}
 math mode (depends on output format).}
 
 \item{separator}{character string specifying the surrounding characters.}
+
+\item{toClip}{logcial, whether returned result should be printed to
+clipboard (see \code{\link{toClipboard}}).}
 }
 \value{
 Simply the unmodified object \code{x} in a list if \code{format} is
@@ -32,10 +35,9 @@ Simply the unmodified object \code{x} in a list if \code{format} is
 \code{pprint} formats the output of the given object in a specified way
 }
 \details{
-This function calls internal style functions (depending on specified output
-format) to convert the output of the object into the specified publication
-style. It offers options to put a math mode and surrounding characters
-around the (concatenated) output.
+This function calls internal style functions to convert the output of the
+object into the specified publication style. It offers options to put a
+math mode and surrounding characters around the (concatenated) output.
 
 If argument \code{format} is missing, a function tries to determine a
 default format specifier. Can be specified to simple return the input

@@ -91,11 +91,11 @@ pubprint <- function()
 #' 
 #' @export
 `push<-.pubprint` <- function(x, 
-                                 item, 
-                                 add = FALSE,
-                                 n = 1,
-                                 ..., 
-                                 value)
+                              item, 
+                              add = FALSE,
+                              n = 1,
+                              ..., 
+                              value)
 {
     if (add)
     {
@@ -104,7 +104,7 @@ pubprint <- function()
             mypos <- length(x$pipe) + 1 - n
             x$pipe[[mypos]] <- c(x$pipe[[mypos]], list(value))
         }
-        else if ("numeric" == class(item))
+        else if (is.numeric(item))
         {
             x$pipe[[item]] <- c(x$pipe[[item]], list(value))
         }
@@ -119,7 +119,7 @@ pubprint <- function()
             x$pipe <- c(x$pipe, list(list(value)))
         else 
         {
-            if ("numeric" == class(item))
+            if (is.numeric(item))
                 x$pipe[[item]] <- list(value)
             else
             {
@@ -187,13 +187,13 @@ pull <- function(x, ...) UseMethod("pull")
 #' 
 #' @export
 pull.pubprint <- function(x, 
-                             item = 1, 
-                             remove = pp_opts$get("removeItems"),
-                             ...)
+                          item = 1, 
+                          remove = pp_opts$get("removeItems"),
+                          ...)
 {
     objName <- deparse(substitute(x))
 
-    if ("numeric" == class(item))
+    if (is.numeric(item))
     {
         if (!length(x$pipe) || length(x$pipe) < item) 
             stop("subscript out of bounds")
@@ -256,10 +256,9 @@ print.pubprint <- function(x, ...)
 #' 
 #' \code{pprint} formats the output of the given object in a specified way
 #'
-#' This function calls internal style functions (depending on specified output
-#' format) to convert the output of the object into the specified publication
-#' style. It offers options to put a math mode and surrounding characters
-#' around the (concatenated) output.
+#' This function calls internal style functions to convert the output of the
+#' object into the specified publication style. It offers options to put a
+#' math mode and surrounding characters around the (concatenated) output.
 #'
 #' If argument \code{format} is missing, a function tries to determine a
 #' default format specifier. Can be specified to simple return the input
@@ -267,7 +266,7 @@ print.pubprint <- function(x, ...)
 #' function, the selected style supports.
 #' 
 #' @param x object which output should be printed. Can be a list to deliver
-#' additional information to internal functions.
+#' additional information to internal style functions.
 #' 
 #' @param format optional format specifier. Character vector, see details.
 #'
@@ -281,6 +280,9 @@ print.pubprint <- function(x, ...)
 #' math mode (depends on output format).
 #'
 #' @param separator character string specifying the surrounding characters.
+#'
+#' @param toClip logcial, whether returned result should be printed to
+#' clipboard (see \code{\link{toClipboard}}).
 #'
 #' @return Simply the unmodified object \code{x} in a list if \code{format} is
 #' \code{"object"}, else a character vector.
@@ -301,9 +303,10 @@ pprint <- function(x,
                    ...,
                    concat = TRUE,
                    mmode = pp_opts$get("mmode"),
-                   separator = pp_opts$get("separator"))
+                   separator = pp_opts$get("separator"),
+                   toClip = FALSE)
 {
-    if ("list" != class(x))
+    if ("list" != class(x)[1])
         x <- list(x)
 
     if (missing(format))
@@ -322,11 +325,47 @@ pprint <- function(x,
         if (!is.null(separator))
         {
             if (separator %in% c("brackets", "delimiter"))
-                x <- out.bracket(x, brackets = pp_opts$get(separator))
+                x <- out.bracket(x, brackets=pp_opts$get(separator), inmmode=FALSE)
             else
-                x <- out.bracket(x, brackets = separator)
+                x <- out.bracket(x, brackets=separator, inmmode=FALSE)
         }
     }
 
+    if (toClip)
+        toClipboard(x)
+
     return(x)
+}
+
+#' Pastes text to clipboard
+#' 
+#' Text is written to clipboard, allowing easy pasting to other software. This
+#' function supports only pasting of character vectors because
+#' \code{\link[base]{writeLines}} is used. Supported operating systems are
+#' BSD/Linux (the \code{xclip} command has to be installed), Mac OS
+#' (\code{pbcopy} has to be installed) and Microsoft Windows.
+#'
+#' @param x character vector that should be pasted to clipboard.
+#' 
+#' @examples
+#' toClipboard("This is a little test.")
+#'
+#' @export
+toClipboard <- function(x)
+{
+    if ("unix" == .Platform$OS.type)
+    {
+        if ("Darwin" == Sys.info()[["sysname"]])
+            con <- pipe("pbcopy", open="w")
+        else
+            con <- pipe("xclip -i", open="w")
+    }
+    else
+        con <- "clipboard"
+
+    writeLines(x, con = con)
+
+    # closing won't be necessary on windows
+    if ("unix" == .Platform$OS.type && isOpen(con))
+        close(con)
 }

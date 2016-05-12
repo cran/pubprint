@@ -56,7 +56,7 @@ pdfkeywords={pubprint, introduction, R}
 
 \title{An Introduction to Pubprint}
 \author{Rudolf Siegel}
-\date{January 26, 2016}
+\date{Version 0.1.1\\January 31, 2016}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Formating options
@@ -82,9 +82,11 @@ library('knitr')
     Pubprint is an extension for the R programming language. This package
     takes the output of several statistical tests, collects the characteristic
     values and transforms it in a publish-friendly pattern. Currently only the
-    APA style is supported with output to HTML, LaTeX, Markdown and plain
-    text. The pubprint package is easily extendable and can be used well
-    with knitr.
+    APA (American Psychological Association) style is supported with output to
+    HTML, LaTeX, Markdown and plain text. The pubprint package is easily
+    customizable, extendable and can be used well with knitr. Additionally
+    pubprint offers a memory system that allows to save and retrieve results
+    of computations.
   \end{abstract}
 
   \tableofcontents
@@ -120,7 +122,7 @@ library('knitr')
   <<>>=
   set.seed(4711) # better reproducibility
 
-  library('pubprint') # load library
+  library("pubprint") # load library
   pp_opts_out$set(pp_init_out("plain")) # better readability in this document
 
   a <- rnorm(40)
@@ -188,7 +190,7 @@ library('knitr')
   pprint(t.test(a, b),
          format = "t.test")
   pprint(t.test(a, b),
-         format = "chisquared")
+         format = "chisq")
   @
 
   If argument \texttt{format = "object"} is given, the object list is
@@ -198,15 +200,19 @@ library('knitr')
   Changing this argument makes sense when there may be different desired
   outputs for the same statistical value (for example you could print a single
   number as a rounded number or treat it like a p-value, etc.).
-  Obviously choosing \texttt{chisquared} does not make sense in this case.
+  Obviously choosing \texttt{chisq} does not make sense in this case.
 
-  The internal style functions are not documented yet.
-  You have to get a closer look at the source code to determine, which exist
-  and how to use them.
-  You can do that by visiting
-  \url{https://bitbucket.org/mutluyum/pubprint/src/} and navigating to
-  \nolinkurl{R/style\_apa.R}.
-  This will be fixed in later versions.
+  Even the internal style functions are not exported to user environment, you
+  can display the documentations.
+  You can find them in the manual or with \texttt{?style.<publication
+  style>.<function>}.
+  As there is only the APA publication style right now, you can replace
+  \texttt{<publication style>} always with \texttt{apa}. 
+  Using tabulator key you will find a list of all internal style functions.
+  The names should be self-explanatory.
+  If you haven chosen the appropriate function, you can take the name (only
+  the name of the function without \texttt{style.apa.}) as an argument for
+  \texttt{format}.
 
 
   \subsection{Pass further information to pprint}
@@ -219,9 +225,9 @@ library('knitr')
   pprint(list(t.test(a, b), 0.2828363))
   @
 
-  The same annotation like above is relevant: check the source code, which
-  further objects in a list are processed by the internal style functions.
-  Unused objects are ignored.
+  Check the documentation of the internal style functions to determine which
+  further objects are processed by the these functions.
+  Unused list items are ignored.
 
 
   \subsection{Passing arguments to internal style functions}
@@ -229,7 +235,7 @@ library('knitr')
   The argument list of pprint has an ellipsis (\texttt{\dots}), that offers
   the possibility to pass arguments to the internal style functions.
   For example you can suppress the estimates of a t-test or alter their names
-  (again: have a look at the source code):
+  (check the documentations for appropriate arguments):
 
   <<>>=
   pprint(t.test(a, b), print.estimate = FALSE)
@@ -359,6 +365,13 @@ library('knitr')
   pprint(t.test(a, b))
   @
 
+  % set defaults again
+  <<echo = FALSE>>=
+  pp_opts_out$set(pp_init_out("plain"))
+  @
+
+  Output format is automatically determined if pubprint is used in a document
+  that is processed by knitr.
   Currently there are no supported publication styles except APA. 
 
   \subsection{Change package defaults}
@@ -381,6 +394,22 @@ library('knitr')
   myttest <- function(...) return("Hello World!")
   pp_opts_style$set("t.test" = myttest)
   pprint(t.test(a, b))
+  @
+
+  % set old defaults
+  <<echo = FALSE>>=
+  pp_opts_style$set(pp_init_style("apa"))
+  @
+
+  If you have written a new style function, you have to call it by specifying
+  the \texttt{format} argument of the \texttt{pprint} function:
+
+  <<>>=
+  # set a new function but do not overwrite a new one
+  myttest <- function(...) return("Hello World!")
+  pp_opts_style$set("new-t.test" = myttest)
+  pprint(t.test(a, b))
+  pprint(t.test(a, b), format = "new-t.test")
   @
 
   Please, consider a contribution to this package if you have written

@@ -76,7 +76,7 @@ test_that("apa:Fisher exact test",
                        "p\\ifmmode<\\else\\textless\\fi.001"))
 })
 
-# style.apa.pearson
+# style.apa.cor.test
 #############################################################################
 
 test_that("apa: Pearson's product-moment correlation",
@@ -87,13 +87,16 @@ test_that("apa: Pearson's product-moment correlation",
 
     t1 <- list(cor.test(x, y))
 
-    expect_identical(style.apa.pearson(t1),
-                     c("r=0.57", 
+    expect_identical(style.apa.cor.test(t1, print.statistic = TRUE),
+                     c("r=.57", 
                        "t(7)=1.84", 
+                       "p=.108"))
+    expect_identical(style.apa.cor.test(t1, print.statistic = FALSE),
+                     c("r=.57", 
                        "p=.108"))
 })
 
-# style.apa.chisquared
+# style.apa.chisq
 #############################################################################
 
 test_that("apa: chi-squared test",
@@ -109,16 +112,20 @@ test_that("apa: chi-squared test",
 
     t1 <- list(chisq.test(M))
 
-    expect_identical(style.apa.chisquared(t1),
-                     c("\\ifmmode\\chi\\else\\(\\chi\\)\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(2, N=2757)=30.07",
+    expect_identical(style.apa.chisq(t1),
+                     c("\\ifmmode\\chi\\else\\textchi\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(2,N=2757)=30.07",
                        "p\\ifmmode<\\else\\textless\\fi.001"))
-    expect_identical(style.apa.chisquared(t1,
-                                          chi.n.name = 'n'),
-                     c("\\ifmmode\\chi\\else\\(\\chi\\)\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(2, n=2757)=30.07",
+    expect_identical(style.apa.chisq(t1,
+                                     print.n = FALSE),
+                     c("\\ifmmode\\chi\\else\\textchi\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(2)=30.07",
                        "p\\ifmmode<\\else\\textless\\fi.001"))
-    expect_identical(style.apa.chisquared(t1,
-                                          chi.n.name = NULL),
-                     c("\\ifmmode\\chi\\else\\(\\chi\\)\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(2, 2757)=30.07",
+    expect_identical(style.apa.chisq(t1,
+                                     n.name = 'n'),
+                     c("\\ifmmode\\chi\\else\\textchi\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(2,n=2757)=30.07",
+                       "p\\ifmmode<\\else\\textless\\fi.001"))
+    expect_identical(style.apa.chisq(t1,
+                                     n.name = NULL),
+                     c("\\ifmmode\\chi\\else\\textchi\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(2,2757)=30.07",
                        "p\\ifmmode<\\else\\textless\\fi.001"))
 })
 
@@ -143,7 +150,7 @@ test_that("apa: bartlett test",
     t1 <- list(bartlett.test(count ~ spray, data = InsectSprays))
 
     expect_identical(style.apa.bartlett(t1),
-                     c("\\ifmmode\\chi\\else\\(\\chi\\)\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(5)=25.96",
+                     c("\\ifmmode\\chi\\else\\textchi\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(5)=25.96",
                        "p\\ifmmode<\\else\\textless\\fi.001"))
 })
 
@@ -159,11 +166,11 @@ test_that("apa: friedman test",
     t1 <- list(friedman.test(x ~ w | t, data = wb))
 
     expect_identical(style.apa.bartlett(t1),
-                     c("\\ifmmode\\chi\\else\\(\\chi\\)\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(1)=0.33",
+                     c("\\ifmmode\\chi\\else\\textchi\\fi\\ifmmode^{2}\\else\\textsuperscript{2}\\fi(1)=0.33",
                        "p=.564"))
 })
 
-# style.apa.ks.test
+# style.apa.ks
 #############################################################################
 
 test_that("apa: Kolmogorov-Smirnow test",
@@ -171,9 +178,41 @@ test_that("apa: Kolmogorov-Smirnow test",
     set.seed(50)
     t1 <- list(ks.test(rnorm(50), runif(30), alternative = "l"))
 
-    expect_identical(style.apa.ks.test(t1),
+    expect_identical(style.apa.ks(t1),
                      c("D\\ifmmode^{-}\\else\\textsuperscript{-}\\fi=0.06",
                        "p=.874"))
+})
+
+# style.apa.anova
+#############################################################################
+
+test_that("apa: one way anova",
+{
+    t1 <- list(anova(lm(count ~ spray, data = InsectSprays)))
+
+    expect_identical(style.apa.anova(t1),
+                     c("F(5,66)=34.70",
+                       "p\\ifmmode<\\else\\textless\\fi.001"))
+})
+
+test_that("apa: two way anova with interaction",
+{
+    set.seed(50)
+    myd <- data.frame(value = c(rnorm(20), rnorm(20) + 1),
+                      effect1 = factor(rep(c(1, 2), times = 20)),
+                      effect2 = factor(rep(c(1, 2), each = 20)))
+
+    t1 <- list(anova(lm(value ~ effect1 * effect2, data = myd)))
+
+    expect_identical(style.apa.anova(t1, effect = 1),
+                     c("F(1,36)=1.00",
+                       "p=.324"))
+    expect_identical(style.apa.anova(t1, effect = 2),
+                     c("F(1,36)=27.19", 
+                       "p\\ifmmode<\\else\\textless\\fi.001"))
+    expect_identical(style.apa.anova(t1, effect = 3),
+                     c("F(1,36)=2.43", 
+                       "p=.128"))
 })
 
 # style.apa.summary.aovlist
@@ -184,7 +223,7 @@ test_that("apa: one way anova",
     t1 <- list(summary(aov(count ~ spray, data = InsectSprays)))
 
     expect_identical(style.apa.summary.aovlist(t1),
-                     c("F(5, 66)=34.70",
+                     c("F(5,66)=34.70",
                        "p\\ifmmode<\\else\\textless\\fi.001"))
 })
 
@@ -198,13 +237,13 @@ test_that("apa: two way anova with interaction",
     t1 <- list(summary(aov(value ~ effect1 * effect2, data = myd)))
 
     expect_identical(style.apa.summary.aovlist(t1, effect = 1),
-                     c("F(1, 36)=1.00",
+                     c("F(1,36)=1.00",
                        "p=.324"))
     expect_identical(style.apa.summary.aovlist(t1, effect = 2),
-                     c("F(1, 36)=27.19", 
+                     c("F(1,36)=27.19", 
                        "p\\ifmmode<\\else\\textless\\fi.001"))
     expect_identical(style.apa.summary.aovlist(t1, effect = 3),
-                     c("F(1, 36)=2.43", 
+                     c("F(1,36)=2.43", 
                        "p=.128"))
 })
 
@@ -227,22 +266,22 @@ test_that("apa: regression analysis -> summary.lm",
     fit <- lm(response ~ predictor1 + predictor2, data = myd)
     fitsm <- list(summary(fit))
     
-    expect_identical(style.apa.summary.lm(fitsm),
+    expect_identical(style.apa.summary.lm.model(fitsm),
                      c("R\\ifmmode^{2}\\else\\textsuperscript{2}\\fi=0.20", 
-                       "F(2, 97)=12.40", 
+                       "F(2,97)=12.40", 
                        "p\\ifmmode<\\else\\textless\\fi.001"))
-    expect_identical(style.apa.summary.lm(fitsm, result = "model", r.squared = "adjusted"),
+    expect_identical(style.apa.summary.lm.model(fitsm, r.squared = "adjusted"),
                      c("R\\ifmmode^{2}\\else\\textsuperscript{2}\\fi=0.19", 
-                       "F(2, 97)=12.40", 
+                       "F(2,97)=12.40", 
                        "p\\ifmmode<\\else\\textless\\fi.001"))
-    expect_identical(style.apa.summary.lm(fitsm, result = 1),
-                     c("b=-0.11", 
+    expect_identical(style.apa.summary.lm.coeff(fitsm, coeff = 1),
+                     c("intercept=-0.11", 
                        "t(97)=-1.22", 
                        "p=.225"))
-    expect_identical(style.apa.summary.lm(fitsm, result = 2),
+    expect_identical(style.apa.summary.lm.coeff(fitsm, coeff = 2),
                      c("b=0.19", 
                        "t(97)=1.53", 
                        "p=.129"))
-    expect_identical(style.apa.summary.lm(fitsm, result = "equation"),
+    expect_identical(style.apa.summary.lm.equation(fitsm),
                      "\\ifmmode\\hat{y}\\else y\\textsuperscript{\\textasciicircum}\\fi = -0.11+0.19*predictor1+0.65*predictor2")
 })

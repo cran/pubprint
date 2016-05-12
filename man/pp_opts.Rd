@@ -4,7 +4,7 @@
 \name{pp_opts}
 \alias{pp_opts}
 \title{General options for the pubprint package}
-\format{An object of class \code{list} of length 2.}
+\format{A list with a \code{get} and \code{set} function.}
 \usage{
 pp_opts
 }
@@ -18,16 +18,6 @@ Set global options with \code{pp_opts$set()} and get your options with
 \describe{
   \item{\code{nsmall}:}{controls the number of digits to print when printing
     numeric values.}
-  \item{\code{leading0}:}{controls whether a leading zero is printed. In
-    some cases this may be inappropriate, like for correlation coefficients
-    (r = .73).}
-  \item{\code{replace0}:}{controls whether numbers that are absolute smaller than
-    \code{1/(10^nsmall)} are replaced with this term. 
-     For example \eqn{p = .0001} with \eqn{p < .001}. Pay attention that
-     zero is replaced as well.}
-  \item{\code{drop0trailing}:}{logical, indicating if trailing zeros, i.e.,
-     \code{"0"} _after_ the decimal mark, should be removed; also drops
-     \code{"e+00"} in exponential formats.}
   \item{\code{delimiter}:}{delimiter between items.}
   \item{\code{removeItems}:}{controls whether items are removed when pulling
     them. Either a logical, \code{"memory"} or \code{"pipe"}. See
@@ -41,6 +31,8 @@ Set global options with \code{pp_opts$set()} and get your options with
 \examples{
 pp_opts$set(nsmall = 3)
 pp_opts$set(nsmall = 3, removeItems = FALSE)
+pp_opts$get("nsmall")
+pp_opts$get()
 
 }
 \keyword{datasets}

@@ -41,10 +41,14 @@ new_defaults <- function(value = list())
 #' Output format options for the pubprint package
 #'
 #' A list which functions are used to print in the correct output format
-#' (LaTeX, HTML, Markdown or plain text).
+#' (LaTeX, HTML, Markdown or plain text). If pubprint is running inside
+#' \code{\link[knitr]{knit}} it will automatically determine the output format
+#' from \code{\link[knitr]{knitr}}.
 #'
 #' Using \code{pp_opts_out$get()} shows all currently used output format
 #' functions, \code{pp_opts_out$set()} allows to change them.
+#'
+#' @format A list with a \code{get} and \code{set} function.
 #'
 #' @seealso See \code{\link{pp_init_out}} for initialising this variable in the
 #' correct way and \code{\link{pp_init_style}} for publication style.
@@ -63,6 +67,8 @@ pp_opts_out <- new_defaults(pp_init_out())
 #'
 #' Using \code{pp_opts_style$get()} to show all currently used publication
 #' style functions. \code{pp_opts_style$set()} allows to change them.
+#'
+#' @format A list with a \code{get} and \code{set} function.
 #'
 #' @seealso See \code{\link{pp_init_style}} for initialising this variable in the
 #' correct way and \code{\link{pp_init_out}} for the output format.
@@ -84,16 +90,6 @@ pp_opts_style <- new_defaults(pp_init_style())
 #' \describe{
 #'   \item{\code{nsmall}:}{controls the number of digits to print when printing
 #'     numeric values.}
-#'   \item{\code{leading0}:}{controls whether a leading zero is printed. In
-#'     some cases this may be inappropriate, like for correlation coefficients
-#'     (r = .73).}
-#'   \item{\code{replace0}:}{controls whether numbers that are absolute smaller than
-#'     \code{1/(10^nsmall)} are replaced with this term. 
-#'      For example \eqn{p = .0001} with \eqn{p < .001}. Pay attention that
-#'      zero is replaced as well.}
-#'   \item{\code{drop0trailing}:}{logical, indicating if trailing zeros, i.e.,
-#'      \code{"0"} _after_ the decimal mark, should be removed; also drops
-#'      \code{"e+00"} in exponential formats.}
 #'   \item{\code{delimiter}:}{delimiter between items.}
 #'   \item{\code{removeItems}:}{controls whether items are removed when pulling
 #'     them. Either a logical, \code{"memory"} or \code{"pipe"}. See
@@ -104,16 +100,17 @@ pp_opts_style <- new_defaults(pp_init_style())
 #'     pubprint output is printed.}
 #' }
 #'
+#' @format A list with a \code{get} and \code{set} function.
+#'
 #' @examples
 #' pp_opts$set(nsmall = 3)
 #' pp_opts$set(nsmall = 3, removeItems = FALSE)
+#' pp_opts$get("nsmall")
+#' pp_opts$get()
 #'
 #' @export
 pp_opts <- new_defaults(list(nsmall = 2,
-                             leading0 = TRUE,
-                             replace0 = TRUE,
-                             drop0trailing = FALSE,
-                             delimiter = ", ",
+                             delimiter = ",",
                              removeItems = "pipe",
                              mmode = TRUE,
                              brackets = c("(", ")", "[", "]"),

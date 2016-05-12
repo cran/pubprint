@@ -75,7 +75,7 @@ test_that("math takes character vectors",
                      "test")
     expect_identical(out.html.math(t1, 
                                     mmode = tmmode), 
-                     "<MATH>test</MATH>")
+                     "<math xmlns=\"&mathml;\">test</math>")
     expect_identical(out.latex.math(t1, 
                                     mmode = tmmode), 
                      "\\ensuremath{test}")
@@ -87,8 +87,8 @@ test_that("math takes character vectors",
                        "test"))
     expect_identical(out.html.math(t2, 
                                     mmode = tmmode), 
-                     c("<MATH>test</MATH>",
-                       "<MATH>test</MATH>"))
+                     c("<math xmlns=\"&mathml;\">test</math>",
+                       "<math xmlns=\"&mathml;\">test</math>"))
     expect_identical(out.latex.math(t2, 
                                     mmode = tmmode), 
                      c("\\ensuremath{test}",
@@ -138,7 +138,7 @@ test_that("math takes multiple arguments",
                      "test1test2")
     expect_identical(out.html.math(t1, t2,
                                     mmode = tmmode), 
-                     "<MATH>test1test2</MATH>")
+                     "<math xmlns=\"&mathml;\">test1test2</math>")
     expect_identical(out.latex.math(t1, t2,
                                     mmode = tmmode), 
                      "\\ensuremath{test1test2}")
@@ -150,8 +150,8 @@ test_that("math takes multiple arguments",
                        "test2test4"))
     expect_identical(out.html.math(t3, t4,
                                     mmode = tmmode), 
-                     c("<MATH>test1test3</MATH>",
-                       "<MATH>test2test4</MATH>"))
+                     c("<math xmlns=\"&mathml;\">test1test3</math>",
+                       "<math xmlns=\"&mathml;\">test2test4</math>"))
     expect_identical(out.latex.math(t3, t4,
                                     mmode = tmmode), 
                      c("\\ensuremath{test1test3}",
@@ -201,7 +201,7 @@ test_that("math takes empty output",
     expect_identical(out.default.math(mmode = tmmode),
                      character(0))
     expect_identical(out.html.math(mmode = tmmode),
-                     "<MATH></MATH>")
+                     "<math xmlns=\"&mathml;\"></math>")
     expect_identical(out.latex.math(mmode = tmmode),
                      "\\ensuremath{}")
 
@@ -222,140 +222,140 @@ test_that("math takes empty output",
 # out.latex.subscript
 #############################################################################
 
-test_that("subscript takes character vectors",
-{
-    # arguments
-    t1 <- "2"
-    t2 <- c("2", "3")
-
-    # character vector (length = 1)
-    expect_identical(out.default.subscript(t1), 
-                     "2") 
-    expect_identical(out.html.subscript(t1), 
-                     "<sub>2</sub>") 
-    expect_identical(out.latex.subscript(t1), 
-                     "\\ifmmode_{2}\\else\\textsubscript{2}\\fi") 
-
-    # character vector (length > 1)
-    expect_identical(out.default.subscript(t2), 
-                     c("2",
-                       "3")) 
-    expect_identical(out.html.subscript(t2), 
-                     c("<sub>2</sub>",
-                       "<sub>3</sub>"))
-    expect_identical(out.latex.subscript(t2), 
-                     c("\\ifmmode_{2}\\else\\textsubscript{2}\\fi",
-                       "\\ifmmode_{3}\\else\\textsubscript{3}\\fi"))
-})
-
-test_that("specialchar takes no multiple arguments",
-{
-    # arguments
-    t1 <- "test"
-
-    expect_error(out.default.subscript(t1, t1))
-    expect_error(out.html.subscript(t1, t1))
-    expect_error(out.latex.subscript(t1, t1))
-})
-
-test_that("specialchar takes no empty input",
-{
-    expect_error(out.default.subscript())
-    expect_error(out.html.subscript())
-    expect_error(out.latex.subscript())
-})
-
-
-# out.default.superscript
-# out.html.superscript
-# out.latex.superscript
-#############################################################################
-
-test_that("superscript takes character vectors",
-{
-    # arguments
-    t1 <- "2"
-    t2 <- c("2", "3")
-
-    # character vector (length = 1)
-    expect_identical(out.default.superscript(t1), 
-                     "2") 
-    expect_identical(out.html.superscript(t1), 
-                     "<sup>2</sup>") 
-    expect_identical(out.latex.superscript(t1), 
-                     "\\ifmmode^{2}\\else\\textsuperscript{2}\\fi") 
-
-    # character vector (length > 1)
-    expect_identical(out.default.superscript(t2), 
-                     c("2",
-                       "3")) 
-    expect_identical(out.html.superscript(t2), 
-                     c("<sup>2</sup>",
-                       "<sup>3</sup>"))
-    expect_identical(out.latex.superscript(t2), 
-                     c("\\ifmmode^{2}\\else\\textsuperscript{2}\\fi",
-                       "\\ifmmode^{3}\\else\\textsuperscript{3}\\fi"))
-})
-
-test_that("specialchar takes no multiple arguments",
-{
-    # arguments
-    t1 <- "test"
-
-    expect_error(out.default.superscript(t1, t1))
-    expect_error(out.html.superscript(t1, t1))
-    expect_error(out.latex.superscript(t1, t1))
-})
-
-test_that("specialchar takes no empty input",
-{
-    expect_error(out.default.superscript())
-    expect_error(out.html.superscript())
-    expect_error(out.latex.superscript())
-})
-
-# out.default.bracket
-#############################################################################
-
-test_that("bracket takes character vectors",
-{
-    # arguments
-    t1 <- "t(12) = 5"
-    t2 <- "t(15) = 8"
-    t3 <- paste(t1, t2)
-    t4 <- "( t[12] = 5 t[15] = 8 )"
-    t5 <- c(t1, t2)
-
-    # character vector (length = 1)
-    expect_identical(out.default.bracket(t1,
-                                         brackets = c("(", ")", "[", "]")), 
-                     "(t[12] = 5)") 
-    expect_identical(out.default.bracket(t3,
-                                         brackets = c("(", ")", "[", "]")), 
-                     "(t[12] = 5 t[15] = 8)") 
-    expect_identical(out.default.bracket(t4,
-                                         brackets = c("(", ")", "[", "]")), 
-                     "([ t(12) = 5 t(15) = 8 ])") 
-
-    # character vector (length > 1)
-    expect_identical(out.default.bracket(t5,
-                                         brackets = c("(", ")", "[", "]")), 
-                     c("(t[12] = 5)", "(t[15] = 8)"))
-})
-
-test_that("bracket takes no multiple arguments",
-{
-    # arguments
-    t1 <- "test"
-
-    expect_error(out.default.bracket(t1, t1, 
-                                     brackets = c("(", ")", "[", "]")))
-})
-
-test_that("bracket takes no empty input",
-{
-    expect_error(out.default.bracket(brackets = c("(", ")", "[", "]")))
-})
+#test_that("subscript takes character vectors",
+#{
+#    # arguments
+#    t1 <- "2"
+#    t2 <- c("2", "3")
+#
+#    # character vector (length = 1)
+#    expect_identical(out.default.subscript(t1), 
+#                     "2") 
+#    expect_identical(out.html.subscript(t1), 
+#                     "<sub>2</sub>") 
+#    expect_identical(out.latex.subscript(t1), 
+#                     "\\ifmmode_{2}\\else\\textsubscript{2}\\fi") 
+#
+#    # character vector (length > 1)
+#    expect_identical(out.default.subscript(t2), 
+#                     c("2",
+#                       "3")) 
+#    expect_identical(out.html.subscript(t2), 
+#                     c("<sub>2</sub>",
+#                       "<sub>3</sub>"))
+#    expect_identical(out.latex.subscript(t2), 
+#                     c("\\ifmmode_{2}\\else\\textsubscript{2}\\fi",
+#                       "\\ifmmode_{3}\\else\\textsubscript{3}\\fi"))
+#})
+#
+#test_that("specialchar takes no multiple arguments",
+#{
+#    # arguments
+#    t1 <- "test"
+#
+#    expect_error(out.default.subscript(t1, t1))
+#    expect_error(out.html.subscript(t1, t1))
+#    expect_error(out.latex.subscript(t1, t1))
+#})
+#
+#test_that("specialchar takes no empty input",
+#{
+#    expect_error(out.default.subscript())
+#    expect_error(out.html.subscript())
+#    expect_error(out.latex.subscript())
+#})
+#
+#
+## out.default.superscript
+## out.html.superscript
+## out.latex.superscript
+##############################################################################
+#
+#test_that("superscript takes character vectors",
+#{
+#    # arguments
+#    t1 <- "2"
+#    t2 <- c("2", "3")
+#
+#    # character vector (length = 1)
+#    expect_identical(out.default.superscript(t1), 
+#                     "2") 
+#    expect_identical(out.html.superscript(t1), 
+#                     "<sup>2</sup>") 
+#    expect_identical(out.latex.superscript(t1), 
+#                     "\\ifmmode^{2}\\else\\textsuperscript{2}\\fi") 
+#
+#    # character vector (length > 1)
+#    expect_identical(out.default.superscript(t2), 
+#                     c("2",
+#                       "3")) 
+#    expect_identical(out.html.superscript(t2), 
+#                     c("<sup>2</sup>",
+#                       "<sup>3</sup>"))
+#    expect_identical(out.latex.superscript(t2), 
+#                     c("\\ifmmode^{2}\\else\\textsuperscript{2}\\fi",
+#                       "\\ifmmode^{3}\\else\\textsuperscript{3}\\fi"))
+#})
+#
+#test_that("specialchar takes no multiple arguments",
+#{
+#    # arguments
+#    t1 <- "test"
+#
+#    expect_error(out.default.superscript(t1, t1))
+#    expect_error(out.html.superscript(t1, t1))
+#    expect_error(out.latex.superscript(t1, t1))
+#})
+#
+#test_that("specialchar takes no empty input",
+#{
+#    expect_error(out.default.superscript())
+#    expect_error(out.html.superscript())
+#    expect_error(out.latex.superscript())
+#})
+#
+## out.default.bracket
+##############################################################################
+#
+#test_that("bracket takes character vectors",
+#{
+#    # arguments
+#    t1 <- "t(12) = 5"
+#    t2 <- "t(15) = 8"
+#    t3 <- paste(t1, t2)
+#    t4 <- "( t[12] = 5 t[15] = 8 )"
+#    t5 <- c(t1, t2)
+#
+#    # character vector (length = 1)
+#    expect_identical(out.default.bracket(t1,
+#                                         brackets = c("(", ")", "[", "]")), 
+#                     "(t[12] = 5)") 
+#    expect_identical(out.default.bracket(t3,
+#                                         brackets = c("(", ")", "[", "]")), 
+#                     "(t[12] = 5 t[15] = 8)") 
+#    expect_identical(out.default.bracket(t4,
+#                                         brackets = c("(", ")", "[", "]")), 
+#                     "([ t(12) = 5 t(15) = 8 ])") 
+#
+#    # character vector (length > 1)
+#    expect_identical(out.default.bracket(t5,
+#                                         brackets = c("(", ")", "[", "]")), 
+#                     c("(t[12] = 5)", "(t[15] = 8)"))
+#})
+#
+#test_that("bracket takes no multiple arguments",
+#{
+#    # arguments
+#    t1 <- "test"
+#
+#    expect_error(out.default.bracket(t1, t1, 
+#                                     brackets = c("(", ")", "[", "]")))
+#})
+#
+#test_that("bracket takes no empty input",
+#{
+#    expect_error(out.default.bracket(brackets = c("(", ")", "[", "]")))
+#})
 
 # out.default.above
 # out.latex.above
@@ -390,3 +390,22 @@ test_that("below takes character vectors",
     expect_identical(out.latex.below(t1, t2),
                      "\\ifmmode\\underset{y}{x}\\else x\\textsubscript{y}\\fi")
 })
+
+## out.default.value
+##############################################################################
+
+#test_that("value",
+#{
+#    # arguments
+#    t1 <- c(1.23456, 0.00000001, -0.00000001, 1.00000001)
+#
+#    # character vector (length = 1)
+#    expect_identical(out.default.value(t1),
+#                     c("1.23", "0.00", "-0.00", "1.00")) 
+#    expect_identical(out.default.value(t1,
+#                                       replace0 = TRUE),
+#                     c("1.23", "0.001", "-0.001", "1.00")) 
+#    expect_identical(out.default.value(t1,
+#                                       drop0trailing = TRUE),
+#                     c("1.23", "0", "-0", "1")) 
+#})

@@ -36,13 +36,25 @@ utils.get.format.htest <- function(x)
            "One Sample t-test" = "t.test",
            "Welch Two Sample t-test" = "t.test",
            "Fisher's Exact Test for Count Data" = "fisher",
-           "Pearson's product-moment correlation" = "pearson",
-           "Pearson's Chi-squared test" = "chisquared",
+           "Pearson's product-moment correlation" = "cor.test",
+           "Spearman's rank correlation rho" = "cor.test",
+           "Kendall's rank correlation tau" = "cor.test",
+           "Pearson's Chi-squared test" = "chisq",
            "Shapiro-Wilk normality test" = "shapiro",
            "Bartlett test of homogeneity of variances" = "bartlett",
            "Friedman rank sum test" = "bartlett",
-           "Two-sample Kolmogorov-Smirnov test" = "ks.test",
+           "Two-sample Kolmogorov-Smirnov test" = "ks",
            "object")
+}
+
+utils.get.format.anova <- function(x)
+{
+    return("anova")
+}
+
+utils.get.format.summary.aov <- function(x)
+{
+    return("summary.aov")
 }
 
 utils.get.format.summary.aovlist <- function(x)
@@ -52,5 +64,10 @@ utils.get.format.summary.aovlist <- function(x)
 
 utils.get.format.summary.lm <- function(x)
 {
-    return("summary.lm")
+    return("summary.lm.model")
+}
+
+utils.get.format.summary.lm.beta <- function(x)
+{
+    return("summary.lm.model")
 }

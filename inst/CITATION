@@ -9,6 +9,6 @@ citEntry(
     author = Filter(function(p) 'aut' %in% p$role, as.person(meta$Author)),
     year = year,
     note = vers,
-    url = meta$URL,
+    url = 'https://cran.r-project.org/package=pubprint',
     textVersion = paste('Rudolf Siegel (', year, '). pubprint: ', meta$Title, '. ', vers, '.', sep = '')
 )

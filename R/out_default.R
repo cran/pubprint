@@ -5,28 +5,6 @@
 #' @include utils.R
 NULL
 
-out.default.names <- function(x)
-{
-    ret <- c()
-
-    for (xi in x)
-        ret <- c(ret,
-                 switch(EXPR = xi,
-                        "cor" = "r", 
-                        "D^-" = paste0("D", out.superscript("-")),
-                        "X-squared" = paste0(out.specialchar("CHI"),
-                                             out.superscript("2")), 
-                        "Bartlett's K-squared" = paste0(out.specialchar("CHI"),
-                                                        out.superscript("2")), 
-                        "Friedman chi-squared" = paste0(out.specialchar("CHI"),
-                                                        out.superscript("2")),
-                        "mean of x" = paste0("M", out.subscript("x")), 
-                        "mean of y" = paste0("M", out.subscript("y")),
-                        xi))
-
-    return(ret)
-}
-
 out.default.specialchar <- function(x)
 {
     return(x)
@@ -40,101 +18,91 @@ out.default.math <- function(..., mmode)
     paste0(...)
 }
 
-out.default.value <- function(x,
-                              name,
-                              inbracket,
-                              nsmall,
-                              replace0,
-                              leading0,
-                              drop0trailing)
+out.default.operator <- function(x)
 {
-    if (!missing(name) && length(x) > 1 && length(name) > 1 && length(x) !=
-        length(name))
-        stop("argument name must be length one or length of argument x")
-    if (!missing(inbracket) && missing(name))
-        stop("If argument inbracket is given, argument name must be given as well")
-    if (!missing(inbracket) && length(inbracket) != length(name) && length(inbracket) > 1)
-        stop("argument inbracket must be length one or equal to length of argument name")
+    paste0(out.specialchar(x))
+}
 
-    num <- x
-
-    if (replace0)
-    {
-        num <- ifelse(abs(x) < 1/(10^nsmall), 
-                      1/(10^nsmall) * sign(x),
-                      num)
-        # cases with x = 0 we have to treat specially
-        num <- ifelse(num != 0, 
-                      num,
-                      1/(10^nsmall))
-    }
-
-    num <- format(round(num, nsmall), 
+out.default.number <- function(x,
+                               nsmall,
+                               leading0,
+                               ...)
+{
+    ret <- format(round(x, nsmall), 
                   nsmall = nsmall, 
                   trim = TRUE,
-                  drop0trailing = drop0trailing)
+                  ...)
 
     if (!leading0) 
-        num <- sub("^(-?)0\\.", "\\1\\.", num)
+        ret <- sub("^(-?)0\\.", "\\1\\.", ret)
 
-    if (!missing(inbracket))
-        name <- paste0(name, out.bracket(inbracket))
+    return(ret)
+}
 
-    if (missing(name) || is.null(name))
-        num <- paste(num)
-    else
-        num <- ifelse(abs(x) < 1/(10^nsmall),
-                      paste(name, num, sep = out.specialchar("<")),
-                      paste(name, num, sep = out.specialchar("=")))
+out.default.identifier <- function(x)
+{
+    return(x)
+}
 
-    return(num)
+out.default.term <- function(x)
+{
+    return(x)
 }
 
 out.default.concat <- function(..., sep)
 {
-    stringr::str_c(..., sep = sep, collapse = sep)
+    return(paste(..., sep = sep, collapse = sep))
 }
 
-out.default.subscript <- function(x)
+# x_y
+out.default.subscript <- function(x, y)
 {
-    return(x)
+    return(paste0(x, "_", y))
 }
 
-out.default.superscript <- function(x)
+# x^y
+out.default.superscript <- function(x, y)
 {
-    return(x)
+    return(paste0(x, "^", y))
 }
 
-out.default.bracket <- function(x, brackets)
-{
-    sapply(x, 
-           out.default.bracket.work, brackets = brackets, 
-           USE.NAMES = FALSE)
-}
-
-out.default.bracket.work <- function(x, brackets)
+# really ugly, but it works ...
+out.default.bracket <- function(x, brackets, inmmode)
 {
     if (length(brackets) %% 2 != 0 && length(brackets) != 1)
         stop("Argument brackets must be length one or a multiple of two.")
-    if (1 != length(x))
-        stop("Argument x must be length one.")
 
     if (1 == length(brackets))
-        return(paste0(brackets, x, brackets))
+        return(stringr::str_c(brackets, x, brackets))
 
-    positions <- stringr::str_locate_all(x, stringr::fixed(brackets))
+    x <- strsplit(x, split="")
+    ret <- c()
 
-    for (i in seq_len(length(brackets)))
+    for (i in x)
     {
-        bracket_new <- brackets[(i + 1) %% length(brackets) + 1]
+        reti <- c()
+        depth <- 1L
 
-        mypos <- positions[[i]][, "start"]
+        for (c in i)
+        {
+            if (c == brackets[depth %% length(brackets)])
+            {
+                depth <- depth + 2L
+                reti <- stringr::str_c(reti, brackets[depth %% length(brackets)])
+            }
+            else if (depth != 1 && c == brackets[depth - 1L])
+            {
+                reti <- stringr::str_c(reti, brackets[depth %% length(brackets) + 1L])
+                depth <- depth - 2L
+            }
+            else
+                reti <- stringr::str_c(reti, c)
+        }
 
-        for (j in seq_len(length(mypos)))
-            stringr::str_sub(x, start = mypos[j], end = mypos[j]) <- bracket_new
+        ret <- c(ret, stringr::str_c(brackets[1], reti, brackets[2]))
     }
 
-    return(paste0(brackets[1], x, brackets[2]))
+    return(ret)
 }
 
 out.default.above <- function(x, y)

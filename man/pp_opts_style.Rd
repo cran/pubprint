@@ -4,7 +4,7 @@
 \name{pp_opts_style}
 \alias{pp_opts_style}
 \title{Publication style options for the pubprint package}
-\format{An object of class \code{list} of length 2.}
+\format{A list with a \code{get} and \code{set} function.}
 \usage{
 pp_opts_style
 }

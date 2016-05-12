@@ -4,13 +4,15 @@
 \name{pp_opts_out}
 \alias{pp_opts_out}
 \title{Output format options for the pubprint package}
-\format{An object of class \code{list} of length 2.}
+\format{A list with a \code{get} and \code{set} function.}
 \usage{
 pp_opts_out
 }
 \description{
 A list which functions are used to print in the correct output format
-(LaTeX, HTML, Markdown or plain text).
+(LaTeX, HTML, Markdown or plain text). If pubprint is running inside
+\code{\link[knitr]{knit}} it will automatically determine the output format
+from \code{\link[knitr]{knitr}}.
 }
 \details{
 Using \code{pp_opts_out$get()} shows all currently used output format

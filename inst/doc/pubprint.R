@@ -4,7 +4,7 @@ library('knitr')
 ## ------------------------------------------------------------------------
 set.seed(4711) # better reproducibility
 
-library('pubprint') # load library
+library("pubprint") # load library
 pp_opts_out$set(pp_init_out("plain")) # better readability in this document
 
 a <- rnorm(40)
@@ -37,7 +37,7 @@ pprint(t.test(a, b),
 pprint(t.test(a, b),
        format = "t.test")
 pprint(t.test(a, b),
-       format = "chisquared")
+       format = "chisq")
 
 ## ------------------------------------------------------------------------
 pprint(list(t.test(a, b), 0.2828363))
@@ -88,6 +88,9 @@ pprint(t.test(a, b))
 pp_opts_out$set(pp_init_out("latex"))
 pprint(t.test(a, b))
 
+## ----echo = FALSE--------------------------------------------------------
+pp_opts_out$set(pp_init_out("plain"))
+
 ## ------------------------------------------------------------------------
 pp_opts$set(mmode = FALSE)
 
@@ -95,4 +98,14 @@ pp_opts$set(mmode = FALSE)
 myttest <- function(...) return("Hello World!")
 pp_opts_style$set("t.test" = myttest)
 pprint(t.test(a, b))
+
+## ----echo = FALSE--------------------------------------------------------
+pp_opts_style$set(pp_init_style("apa"))
+
+## ------------------------------------------------------------------------
+# set a new function but do not overwrite a new one
+myttest <- function(...) return("Hello World!")
+pp_opts_style$set("new-t.test" = myttest)
+pprint(t.test(a, b))
+pprint(t.test(a, b), format = "new-t.test")
 

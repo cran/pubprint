@@ -59,21 +59,30 @@ out.math <- function(..., mmode = TRUE)
     pp_opts_out$get("math")(..., mmode = mmode)
 }
 
-out.value <- function(x,
-                      name,
-                      inbracket,
-                      nsmall = pp_opts$get("nsmall"),
-                      replace0 = pp_opts$get("replace0"),
-                      leading0 = pp_opts$get("leading0"),
-                      drop0trailing = pp_opts$get("drop0trailing"))
+out.operator <- function(x)
 {
-    pp_opts_out$get("value")(x = x,
-                             name = name,
-                             inbracket = inbracket,
-                             nsmall = nsmall,
-                             replace0 = replace0,
-                             leading0 = leading0,
-                             drop0trailing = drop0trailing)
+    pp_opts_out$get("operator")(x=x)
+}
+
+out.number <- function(x, 
+                       nsmall=pp_opts$get("nsmall"),
+                       leading0=TRUE,
+                       ...)
+{
+    pp_opts_out$get("number")(x=x,
+                              nsmall=nsmall,
+                              leading0=leading0,
+                              ...)
+}
+
+out.identifier <- function(x)
+{
+    pp_opts_out$get("identifier")(x=x)
+}
+
+out.term <- function(x)
+{
+    pp_opts_out$get("term")(x=x)
 }
 
 out.concat <- function(..., sep = pp_opts$get("delimiter"))
@@ -81,19 +90,27 @@ out.concat <- function(..., sep = pp_opts$get("delimiter"))
     pp_opts_out$get("concat")(..., sep = sep)
 }
 
-out.subscript <- function(x)
+# x_y
+out.subscript <- function(x, y)
 {
-    pp_opts_out$get("subscript")(x = x)
+    pp_opts_out$get("subscript")(x = x,
+                                 y = y)
 }
 
-out.superscript <- function(x)
+# x^y
+out.superscript <- function(x, y)
 {
-    pp_opts_out$get("superscript")(x = x)
+    pp_opts_out$get("superscript")(x = x,
+                                   y = y)
 }
 
-out.bracket <- function(x, brackets = pp_opts$get("brackets"))
+out.bracket <- function(x, 
+                        brackets = pp_opts$get("brackets"),
+                        inmmode = TRUE)
 {
-    pp_opts_out$get("bracket")(x = x, brackets = brackets)
+    pp_opts_out$get("bracket")(x=x, 
+                               brackets=brackets,
+                               inmmode=inmmode)
 }
 
 out.above <- function(x, y)
