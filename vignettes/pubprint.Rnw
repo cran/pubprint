@@ -56,7 +56,7 @@ pdfkeywords={pubprint, introduction, R}
 
 \title{An Introduction to Pubprint}
 \author{Rudolf Siegel}
-\date{Version 0.1.1\\January 31, 2016}
+\date{Version 0.2.1\\May 24, 2016}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Formating options

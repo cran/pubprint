@@ -1,6 +1,6 @@
 Package: pubprint
-Version: 0.2
-Date: 2016-05-11
+Version: 0.2.1
+Date: 2016-05-24
 Title: Printing Results of Statistical Computing in a Publishable Way
 Description: Takes the output of statistical tests and transforms it in a
     publish-friendly pattern. Currently only APA (American Psychological
@@ -28,6 +28,6 @@ Collate: 'utils.R' 'style_default.R' 'style_apa.R' 'style.R'
         'out_html.R' 'out.R' 'defaults.R' 'io.R' 'pubprint.R' 'zzz.R'
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-05-11 17:49:42 UTC; fire
+Packaged: 2016-05-24 07:43:57 UTC; fire
 Repository: CRAN
-Date/Publication: 2016-05-12 14:48:03
+Date/Publication: 2016-05-24 10:28:06

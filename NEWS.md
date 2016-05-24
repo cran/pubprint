@@ -6,6 +6,12 @@ the [issue tracker][https://bitbucket.org/mutluyum/pubprint/issues/].
 See [commit list][https://bitbucket.org/mutluyum/pubprint/commits/] for more
 details.
 
+Version 0.2.1 (release date: 24.05.2016)
+----------------------------------------
+
+- Fixed wrong output in html brackets.
+- Corrected date and version in vignette.
+
 Version 0.2 (release date: 11.05.2016)
 --------------------------------------
 

@@ -36,7 +36,7 @@ Download the package from
 [here](https://bitbucket.org/mutluyum/pubprint/downloads)
 and install it in a Linux/Unix shell:
 ```
-R CMD INSTALL pubprint_0.2.tar.gz
+R CMD INSTALL pubprint_0.2.1.tar.gz
 ```
 
 ### Bitbucket, development versions
@@ -50,7 +50,7 @@ hg clone https://bitbucket.org/mutluyum/pubprint
 cd pubprint/
 make
 ```
-Please note that development versions may not be working.
+Please note that development versions may contain some bugs.
 
 Documentation
 -------------

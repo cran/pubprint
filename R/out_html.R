@@ -151,24 +151,26 @@ out.html.superscript <- function(x, y)
 }
 
 # really ugly, but it works ...
-out.html.bracket <- function(x, brackets, inmmode = TRUE)
+out.html.bracket <- function(x, brackets, inmmode)
 {
     if (length(brackets) %% 2 != 0 && length(brackets) != 1)
         stop("Argument brackets must be length one or a multiple of two.")
 
-    if (!inmmode)
-        return(stringr::str_c(brackets, x, brackets))
-
     if (1 == length(brackets))
-        return(stringr::str_c("<mfenced open=\"",
-                              brackets, 
-                              "\" close=\"",
-                              brackets,
-                              "\">",
-                              x, 
-                              "</mfenced>"))
+    {
+        if (inmmode)
+            return(stringr::str_c("<mfenced open=\"",
+                                  brackets, 
+                                  "\" close=\"",
+                                  brackets,
+                                  "\">",
+                                  x, 
+                                  "</mfenced>"))
+        else
+            return(stringr::str_c(brackets, x, brackets))
+    }
 
-    x <- stringr::str_split(x, stringr::fixed("<mfenced"))
+    x <- stringr::str_split(x, "<mfenced open=\".?\" close=\".?\">")
     ret <- c()
 
     for (item in x)
@@ -182,16 +184,13 @@ out.html.bracket <- function(x, brackets, inmmode = TRUE)
             # bracket)
             if (-1L != depth)
             {
-                string <- gsub(brackets[depth], 
-                               brackets[(depth + 2) %% length(brackets)], 
-                               string, 
-                               fixed=TRUE)
-                string <- gsub(brackets[depth + 1], 
-                               brackets[(depth + 2) %% length(brackets) + 1], 
-                               string, 
-                               fixed=TRUE)
-
-                reti <- stringr::str_c(reti, "<mfenced", string)
+                reti <- stringr::str_c(reti, 
+                                       "<mfenced open=\"",
+                                       brackets[(depth + 2) %% length(brackets)], 
+                                       "\" close=\"",
+                                       brackets[(depth + 2) %% length(brackets) + 1], 
+                                       "\">", 
+                                       string)
             }
             else
                 reti <- stringr::str_c(reti, string)
@@ -199,13 +198,20 @@ out.html.bracket <- function(x, brackets, inmmode = TRUE)
             depth <- depth + 2L - (2 * stringr::str_count(string, "</mfenced>"))
         }
 
-        ret <- c(ret, 
-                 stringr::str_c("<mfenced open=\"", 
-                                brackets[1], "\" close=\"", 
-                                brackets[2], 
-                                "\">",
-                                reti,
-                                "</mfenced>"))
+        if (inmmode)
+            ret <- c(ret, 
+                     stringr::str_c("<mfenced open=\"", 
+                                    brackets[1], 
+                                    "\" close=\"", 
+                                    brackets[2], 
+                                    "\">",
+                                    reti,
+                                    "</mfenced>"))
+        else
+            ret <- c(ret, 
+                     stringr::str_c(brackets[1],
+                                    reti,
+                                    brackets[2]))
     }
 
     return(ret)
